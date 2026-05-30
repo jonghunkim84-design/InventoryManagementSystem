@@ -96,6 +96,28 @@ python main.py
 
 ---
 
+## 스크린샷
+
+### 대시보드
+![대시보드](docs/dashboard.png)
+
+### 입고 처리 (OCR 자동 매칭)
+![입고 처리](docs/incoming.png)
+
+### 판매 처리 (BOM 자동 소진)
+![판매 처리](docs/sales.png)
+
+### 폐기 등록
+![폐기 등록](docs/waste.png)
+
+### 재고 실사 보정
+![재고 실사](docs/adjust.png)
+
+### 재고 알림 / 발주 추천
+![재고 알림](docs/alerts.png)
+
+---
+
 ## 실행 예시
 
 ```
