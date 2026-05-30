@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="section-title">대시보드</div>
+
+<div class="grid-3" style="margin-bottom:24px;">
+  <div class="stat-card {{ 'warn' if alert_count > 0 else 'ok' }}">
+    <div class="label">재고 부족 품목</div>
+    <div class="value">{{ alert_count }}개</div>
+  </div>
+  <div class="stat-card ok">
+    <div class="label">전체 식재료</div>
+    <div class="value">{{ stock|length }}종</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">금일 폐기 누계</div>
+    <div class="value" style="color:#f39c12;">{{ total_waste_count }}건</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h2>식재료 재고 현황</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>식재료</th>
+          <th>현재고</th>
+          <th>안전재고</th>
+          <th>재고율</th>
+          <th>상태</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in stock %}
+        {% set ratio = [[(s.current_stock / s.safety_stock * 100) if s.safety_stock > 0 else 100, 0]|max, 100]|min %}
+        <tr>
+          <td><strong>{{ s.name }}</strong></td>
+          <td>{{ s.current_stock|int }}{{ s.base_unit }}</td>
+          <td>{{ s.safety_stock|int }}{{ s.base_unit }}</td>
+          <td style="width:120px;">
+            <div class="progress-bar">
+              <div class="fill {{ 'warn' if s.current_stock <= s.safety_stock else 'ok' }}" style="width:{{ ratio }}%;"></div>
+            </div>
+          </td>
+          <td>
+            {% if s.current_stock <= s.safety_stock %}
+              <span class="badge warn">부족</span>
+            {% else %}
+              <span class="badge ok">정상</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>최근 입고 내역</h2>
+    <table>
+      <thead>
+        <tr><th>식재료</th><th>수량</th><th>입고일시</th></tr>
+      </thead>
+      <tbody>
+        {% for r in recent_incoming %}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td>{{ r.quantity|int }}{{ r.base_unit }}</td>
+          <td style="color:#888;font-size:0.82rem;">{{ r.scanned_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" style="color:#aaa;text-align:center;padding:20px;">입고 내역 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if waste %}
+<div class="card" style="margin-top:20px;">
+  <h2>폐기 누계</h2>
+  <table>
+    <thead>
+      <tr><th>식재료</th><th>총 폐기량</th></tr>
+    </thead>
+    <tbody>
+      {% for w in waste %}
+      <tr>
+        <td>{{ w.name }}</td>
+        <td style="color:#e94560;">{{ w.total_waste|int }}{{ w.base_unit }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{% endblock %}

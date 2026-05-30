@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="section-title">폐기 등록</div>
+<div class="grid-2">
+  <div class="card">
+    <h2>폐기(로스) 등록</h2>
+    <form method="POST">
+      <div>
+        <label>식재료</label>
+        <select name="ingredient_id" required>
+          <option value="">식재료 선택</option>
+          {% for i in ingredients %}
+          <option value="{{ i.id }}">{{ i.name }} (현재고: {{ i.current_stock|int }}{{ i.base_unit }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>폐기 수량</label>
+        <input type="number" name="quantity" step="0.1" min="0.1" required>
+      </div>
+      <div>
+        <label>폐기 사유</label>
+        <select name="reason">
+          <option>유통기한 경과</option>
+          <option>변질</option>
+          <option>파손</option>
+          <option>조리 실패</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <button type="submit">폐기 등록</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>최근 폐기 내역</h2>
+    <table>
+      <thead>
+        <tr><th>식재료</th><th>수량</th><th>사유</th><th>등록일시</th></tr>
+      </thead>
+      <tbody>
+        {% for w in logs %}
+        <tr>
+          <td>{{ w.name }}</td>
+          <td style="color:#e94560;">{{ w.quantity|int }}{{ w.base_unit }}</td>
+          <td>{{ w.reason }}</td>
+          <td style="color:#888;font-size:0.82rem;">{{ w.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="color:#aaa;text-align:center;padding:20px;">폐기 내역 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="section-title">재고 알림 / 발주 추천</div>
+
+{% if alerts %}
+  {% for a in alerts %}
+  <div class="alert-box">
+    <div class="name">{{ a.name }}</div>
+    <div class="detail">
+      현재고: <strong>{{ a.current_stock|int }}{{ a.unit }}</strong> &nbsp;|&nbsp;
+      안전재고: {{ a.safety_stock|int }}{{ a.unit }}
+    </div>
+    <div class="recommend">권장 발주량: {{ a.order_recommendation|int }}{{ a.unit }}</div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="card" style="text-align:center;padding:40px;color:#0f9b8e;">
+    <strong>모든 재고가 안전 수준입니다.</strong>
+  </div>
+{% endif %}
+
+<div class="card" style="margin-top:24px;">
+  <h2>전체 재고 현황</h2>
+  <table>
+    <thead>
+      <tr><th>식재료</th><th>현재고</th><th>안전재고</th><th>상태</th></tr>
+    </thead>
+    <tbody>
+      {% for s in stock %}
+      <tr>
+        <td>{{ s.name }}</td>
+        <td>{{ s.current_stock|int }}{{ s.base_unit }}</td>
+        <td>{{ s.safety_stock|int }}{{ s.base_unit }}</td>
+        <td>
+          {% if s.current_stock <= s.safety_stock %}
+            <span class="badge warn">부족</span>
+          {% else %}
+            <span class="badge ok">정상</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

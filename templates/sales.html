@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="section-title">판매 처리</div>
+<div class="grid-2">
+  <div class="card">
+    <h2>판매 등록 (BOM 자동 소진)</h2>
+    <form method="POST">
+      <div>
+        <label>메뉴명</label>
+        <select name="menu_name" required>
+          <option value="">메뉴 선택</option>
+          {% for m in menus %}
+          <option value="{{ m }}">{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>판매 수량</label>
+        <input type="number" name="order_count" min="1" value="1" required>
+      </div>
+      <button type="submit">판매 처리</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>등록된 레시피 (BOM)</h2>
+    <table>
+      <thead>
+        <tr><th>메뉴</th><th>식재료</th><th>1인분 소진량</th></tr>
+      </thead>
+      <tbody>
+        {% for r in recipes %}
+        <tr>
+          <td>{{ r.menu_name }}</td>
+          <td>{{ r.name }}</td>
+          <td>{{ r.usage_amount|int }}{{ r.base_unit }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" style="color:#aaa;text-align:center;padding:20px;">레시피 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

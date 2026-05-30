@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스마트 재고 관리 시스템</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; color: #222; }
+
+    header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.2rem; font-weight: 600; }
+    header span { font-size: 0.8rem; color: #aaa; }
+
+    nav {
+      background: #16213e;
+      display: flex;
+      gap: 4px;
+      padding: 0 32px;
+    }
+    nav a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 12px 18px;
+      font-size: 0.9rem;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    nav a:hover, nav a.active { color: #fff; border-bottom-color: #e94560; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .card h2 { font-size: 1rem; color: #555; margin-bottom: 16px; font-weight: 600; }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .stat-card .label { font-size: 0.8rem; color: #888; margin-bottom: 6px; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; }
+    .stat-card.warn .value { color: #e94560; }
+    .stat-card.ok .value { color: #0f9b8e; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead th { background: #f7f8fa; padding: 10px 12px; text-align: left; font-weight: 600; color: #555; border-bottom: 2px solid #eee; }
+    tbody td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #fafafa; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge.ok { background: #e6f9f6; color: #0f9b8e; }
+    .badge.warn { background: #ffeef1; color: #e94560; }
+
+    .progress-bar { background: #eee; border-radius: 4px; height: 8px; overflow: hidden; }
+    .progress-bar .fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .fill.ok { background: #0f9b8e; }
+    .fill.warn { background: #e94560; }
+
+    form { display: flex; flex-direction: column; gap: 14px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { font-size: 0.85rem; color: #555; font-weight: 500; display: block; margin-bottom: 4px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus { border-color: #1a1a2e; }
+    button[type=submit] {
+      background: #1a1a2e;
+      color: #fff;
+      border: none;
+      padding: 11px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    button[type=submit]:hover { background: #e94560; }
+
+    .alert-box {
+      background: #fff4f5;
+      border-left: 4px solid #e94560;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+    .alert-box .name { font-weight: 700; margin-bottom: 4px; }
+    .alert-box .detail { font-size: 0.85rem; color: #666; }
+    .alert-box .recommend { font-size: 0.85rem; color: #e94560; margin-top: 4px; font-weight: 600; }
+
+    .flash {
+      padding: 12px 18px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .flash.success { background: #e6f9f6; color: #0f7a70; border-left: 4px solid #0f9b8e; }
+    .flash.error   { background: #fff0f2; color: #c0392b; border-left: 4px solid #e94560; }
+
+    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; color: #1a1a2e; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>스마트 재고 관리 시스템</h1>
+    <span>F&B 소상공인용</span>
+  </header>
+  <nav>
+    <a href="/" class="{{ 'active' if active == 'dashboard' }}">대시보드</a>
+    <a href="/incoming" class="{{ 'active' if active == 'incoming' }}">입고 처리</a>
+    <a href="/sales" class="{{ 'active' if active == 'sales' }}">판매 처리</a>
+    <a href="/waste" class="{{ 'active' if active == 'waste' }}">폐기 등록</a>
+    <a href="/adjust" class="{{ 'active' if active == 'adjust' }}">재고 실사</a>
+    <a href="/alerts" class="{{ 'active' if active == 'alerts' }}">재고 알림</a>
+  </nav>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>

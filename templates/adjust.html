@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="section-title">재고 실사 보정</div>
+<div class="grid-2">
+  <div class="card">
+    <h2>실사 결과 입력</h2>
+    <form method="POST">
+      <div>
+        <label>식재료</label>
+        <select name="ingredient_id" required>
+          <option value="">식재료 선택</option>
+          {% for i in ingredients %}
+          <option value="{{ i.id }}">{{ i.name }} (현재고: {{ i.current_stock|int }}{{ i.base_unit }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>실사 수량 (실제 확인된 재고량)</label>
+        <input type="number" name="new_amount" step="0.1" min="0" required>
+      </div>
+      <div>
+        <label>보정 사유</label>
+        <input type="text" name="reason" placeholder="예: 월말 실사, 오입력 수정" required>
+      </div>
+      <button type="submit">재고 보정 적용</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>보정 이력</h2>
+    <table>
+      <thead>
+        <tr><th>식재료</th><th>조정량</th><th>사유</th><th>일시</th></tr>
+      </thead>
+      <tbody>
+        {% for a in logs %}
+        <tr>
+          <td>{{ a.name }}</td>
+          <td style="color:{{ '#0f9b8e' if a.adjustment_amount >= 0 else '#e94560' }};">
+            {{ '{:+.0f}'.format(a.adjustment_amount) }}{{ a.base_unit }}
+          </td>
+          <td>{{ a.reason }}</td>
+          <td style="color:#888;font-size:0.82rem;">{{ a.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="color:#aaa;text-align:center;padding:20px;">보정 이력 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

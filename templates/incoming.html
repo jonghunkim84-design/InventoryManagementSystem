@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="section-title">입고 처리</div>
+<div class="grid-2">
+  <div class="card">
+    <h2>OCR 입고 등록</h2>
+    <form method="POST">
+      <div>
+        <label>스캔된 식재료명</label>
+        <input type="text" name="scanned_name" placeholder="예: 양파 1망, 깐마늘" required>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>수량</label>
+          <input type="number" name="quantity" step="0.1" min="0.1" placeholder="예: 2" required>
+        </div>
+        <div>
+          <label>단위</label>
+          <select name="unit_name">
+            {% for u in units %}
+            <option value="{{ u }}">{{ u }}</option>
+            {% endfor %}
+            <option value="g">g (기본)</option>
+            <option value="ea">ea (기본)</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>금액 (원, 선택)</label>
+        <input type="number" name="total_price" placeholder="예: 5000">
+      </div>
+      <button type="submit">입고 처리</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>최근 입고 내역</h2>
+    <table>
+      <thead>
+        <tr><th>식재료</th><th>수량</th><th>금액</th><th>입고일시</th></tr>
+      </thead>
+      <tbody>
+        {% for r in logs %}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td>{{ r.quantity|int }}{{ r.base_unit }}</td>
+          <td>{{ '{:,}'.format(r.total_price) + '원' if r.total_price else '-' }}</td>
+          <td style="color:#888;font-size:0.82rem;">{{ r.scanned_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="color:#aaa;text-align:center;padding:20px;">입고 내역 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
